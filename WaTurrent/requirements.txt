@@ -1,0 +1,5 @@
+ultralytics
+requests
+zeroconf
+flask
+opencv-python-headless

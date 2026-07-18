@@ -1,0 +1,20 @@
+{
+    "is_flipped": false,
+    "invert_pan": false,
+    "invert_tilt": false,
+    "conf_threshold": 0.15,
+    "target_class": "bird",
+    "camera_resolution": 10,
+    "camera_quality": "high",
+    "enable_video_capture": true,
+    "enable_zoom_2x": false,
+    "enable_scanning_mode": false,
+    "enable_image_improvement": true,
+    "current_model_file": "yolo26s.pt",
+    "pan_limit_ccw": 10.0,
+    "pan_limit_cw": 170.0,
+    "tilt_limit_min": 10.0,
+    "tilt_limit_max": 170.0,
+    "home_pan_angle": 65.0,
+    "home_tilt_angle": 96.125
+}

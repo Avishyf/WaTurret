@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Skynet Targeting Feed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 20px 10px; 
+            background: linear-gradient(135deg, #0f0f15 0%, #151525 100%); 
+            color: #fff; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        
+        /* Layout structural grid/flex */
+        .dashboard-layout {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        h2 { 
+            margin-top: 0; 
+            margin-bottom: 5px; 
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+            background: linear-gradient(90deg, #ff4b4b 0%, #ff7b7b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .status { 
+            color: #00ff88; 
+            font-weight: bold; 
+            margin-bottom: 20px; 
+            text-align: center;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: color 0.25s ease;
+        }
+        .stream-window { 
+            position: relative;
+            background: #000; 
+            border-radius: 12px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        img { 
+            width: 100%; 
+            height: auto;
+            border-radius: 12px; 
+            display: block; 
+        }
+        
+        /* Premium Card Styling for panels */
+        .controls-panel, .wiring-guide, .feed-card {
+            padding: 20px;
+            background: rgba(30, 30, 45, 0.65);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            box-sizing: border-box;
+            text-align: left;
+        }
+        
+        .wiring-guide h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ff4b4b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .wiring-guide ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            font-size: 13.5px;
+            color: #ccc;
+        }
+        .wiring-guide li {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            justify-content: space-between;
+        }
+        .wiring-guide li:last-child {
+            border-bottom: none;
+        }
+        .wiring-guide .pin-label {
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 600;
+        }
+        .wiring-guide .pin-num {
+            background: rgba(255, 75, 75, 0.15);
+            color: #ff7b7b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 12px;
+            border: 1px solid rgba(255, 75, 75, 0.25);
+        }
+        .controls-panel h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ff4b4b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .slider-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 600;
+        }
+        .slider-value {
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 14px;
+            background: rgba(255, 75, 75, 0.15);
+            color: #ff7b7b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 75, 75, 0.25);
+            min-width: 35px;
+            text-align: center;
+        }
+        .slider-input {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            transition: background 0.15s ease;
+        }
+        .slider-input::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+        }
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ff4b4b;
+            cursor: pointer;
+            margin-top: -6px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 8px rgba(255, 75, 75, 0.5);
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+        .slider-input::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #ff6b6b;
+        }
+        .slider-input::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ff4b4b;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 8px rgba(255, 75, 75, 0.5);
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+        .slider-input::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            background: #ff6b6b;
+        }
+        
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: .2s;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        input:checked + .switch-slider {
+            background-color: #ff4b4b;
+            border-color: rgba(255, 75, 75, 0.4);
+        }
+        input:checked + .switch-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Red target overlay in video stream */
+        .red-target {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            border: 2px solid rgba(255, 59, 48, 0.85);
+            border-radius: 50%;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 6px rgba(255, 59, 48, 0.45);
+            z-index: 5;
+        }
+        .red-target::before {
+            content: '';
+            position: absolute;
+            width: 44px;
+            height: 2px;
+            background: rgba(255, 59, 48, 0.85);
+        }
+        .red-target::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 44px;
+            background: rgba(255, 59, 48, 0.85);
+        }
+        .red-target-dot {
+            width: 6px;
+            height: 6px;
+            background: #ff3b30;
+            border-radius: 50%;
+            z-index: 6;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            100% { opacity: 1.0; }
+        }
+
+        /* D-Pad Joystick */
+        .joystick-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+        .horizontal-arrows {
+            display: flex;
+            gap: 6px;
+        }
+        .arrow-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 15, 25, 0.55);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .arrow-btn:active {
+            background: rgba(0, 210, 255, 0.55);
+            border-color: rgba(0, 210, 255, 0.75);
+            color: #fff;
+            transform: scale(0.92);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.35);
+        }
+        
+        /* Action overlay and buttons */
+        .action-overlay {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+        }
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 15, 25, 0.55);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .action-btn:active, .action-btn.active {
+            background: rgba(255, 75, 75, 0.65);
+            border-color: rgba(255, 90, 90, 0.85);
+            color: #fff;
+            transform: scale(0.92);
+            box-shadow: 0 0 10px rgba(255, 75, 75, 0.45);
+        }
+        
+        .desktop-only-calibration {
+            display: block;
+        }
+        
+        #videoListContainer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        /* Responsive CSS for Mobile viewports */
+        .tab-bar {
+            display: none;
+        }
+        
+        /* Calibration panel is now a default block below video feed */
+        .calibration-panel {
+            background: rgba(30, 30, 45, 0.65);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Responsive video card display rules */
+        @media (min-width: 1024px) {
+            .vid-card-mobile {
+                display: none !important;
+            }
+            .vid-card-desktop {
+                display: flex !important;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .vid-card-desktop {
+                display: none !important;
+            }
+            .vid-card-mobile {
+                display: flex !important;
+            }
+            
+            #videoListContainer {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .desktop-only-overlay {
+                display: none !important;
+            }
+            .desktop-only-calibration {
+                display: none !important;
+            }
+            
+            .horizontal-arrows {
+                gap: 48px !important;
+            }
+            .arrow-btn {
+                width: 57px !important;
+                height: 57px !important;
+                font-size: 20px !important;
+            }
+            #pumpBtn-mobile {
+                width: 88px !important;
+                height: 88px !important;
+                border-radius: 50% !important;
+            }
+            #pumpBtn-mobile svg {
+                width: 48px !important;
+                height: 48px !important;
+            }
+            #pumpBtn-mobile:active, #pumpBtn-mobile.active {
+                background: rgba(255, 75, 75, 0.65);
+                border-color: rgba(255, 90, 90, 0.85);
+                color: #fff;
+                transform: scale(0.92);
+                box-shadow: 0 0 15px rgba(255, 75, 75, 0.6);
+            }
+            
+            body {
+                padding-bottom: 80px !important;
+            }
+            .dashboard-layout {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+            .column {
+                display: none !important; /* Hide all columns by default on mobile */
+                width: 100%;
+            }
+            
+            /* Switch active column */
+            body.tab-camera .center-column {
+                display: flex !important;
+            }
+            body.tab-settings .left-column {
+                display: flex !important;
+            }
+            body.tab-videos .right-column {
+                display: flex !important;
+            }
+            
+            /* Bottom tab bar styling */
+            .tab-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 64px;
+                background: rgba(20, 20, 30, 0.95);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1000;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            }
+            .tab-btn {
+                flex: 1;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                background: none;
+                border: none;
+                color: #888;
+                font-family: inherit;
+                font-size: 11px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: color 0.15s ease;
+            }
+            .tab-btn.active {
+                color: #ff4b4b;
+            }
+            .tab-btn svg {
+                stroke: currentColor;
+                transition: transform 0.15s ease;
+            }
+            .tab-btn.active svg {
+                transform: scale(1.1);
+            }
+            
+            /* Place controls below the video card */
+            .stream-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            .controls-area {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                margin-top: 15px;
+            }
+            .controls-grid {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+            .joystick-overlay, .action-overlay {
+                position: static !important;
+            }
+            .action-overlay {
+                flex-direction: row !important;
+                gap: 15px;
+            }
+            
+            .calibration-panel {
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 15px;
+                margin-top: 0px;
+            }
+        }
+
+        /* Desktop specific 3-column sticky styles */
+        @media (min-width: 1024px) {
+            body {
+                display: block;
+                padding: 40px 20px;
+            }
+            .dashboard-layout {
+                display: grid;
+                grid-template-columns: 390px 1fr 390px;
+                gap: 20px;
+                max-width: 96vw;
+                width: 100%;
+                margin: 0 auto;
+                justify-content: center;
+                align-items: start;
+            }
+            .column {
+                order: unset !important;
+                display: flex !important;
+            }
+            .center-column {
+                position: sticky;
+                top: 20px;
+            }
+            .joystick-overlay {
+                position: absolute;
+                bottom: 15px;
+                left: 15px;
+                z-index: 10;
+            }
+            .action-overlay {
+                position: absolute;
+                bottom: 15px;
+                right: 15px;
+                z-index: 10;
+            }
+            
+            .controls-area {
+                display: none !important;
+            }
+            .desktop-only-overlay {
+                display: flex !important;
+            }
+            .desktop-only-calibration {
+                display: block !important;
+            }
+            
+            /* 50% Larger Desktop Controls & Symmetrical Spacing */
+            .joystick-overlay .arrow-btn {
+                width: 66px !important;
+                height: 66px !important;
+                font-size: 24px !important;
+            }
+            .joystick-overlay .horizontal-arrows {
+                gap: 78px !important;
+            }
+            .action-overlay .action-btn {
+                width: 66px !important;
+                height: 66px !important;
+            }
+            .action-overlay #pumpBtn svg {
+                width: 42px !important;
+                height: 42px !important;
+            }
+            .action-overlay #zoomBtn svg {
+                width: 36px !important;
+                height: 36px !important;
+            }
+        }
+        
+        .action-btn.active#zoomBtn {
+            background: rgba(0, 210, 255, 0.65) !important;
+            border-color: rgba(0, 230, 255, 0.85) !important;
+            color: #fff !important;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.45) !important;
+        }
+
+        /* Help Icon & Popup Modal Styling */
+        .help-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            margin-left: 8px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.15s ease;
+            vertical-align: middle;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .help-icon:hover {
+            border-color: #00d2ff;
+            color: #00d2ff;
+            background: rgba(0, 210, 255, 0.1);
+            box-shadow: 0 0 6px rgba(0, 210, 255, 0.3);
+        }
+        .info-modal {
+            display: none;
+            position: absolute;
+            z-index: 10000;
+            background: rgba(18, 18, 28, 0.98);
+            border: 1.5px solid rgba(0, 210, 255, 0.5);
+            padding: 16px 20px;
+            border-radius: 10px;
+            width: 280px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            animation: popoverFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes popoverFadeIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .info-modal-close {
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.15s ease;
+            line-height: 1;
+        }
+        .info-modal-close:hover {
+            color: #ff4b4b;
+        }
+        .info-modal h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 14.5px;
+            color: #00d2ff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+            font-weight: 600;
+            padding-right: 15px; /* prevent overlap with close button */
+        }
+        .info-modal p {
+            margin: 0;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body class="tab-camera">
+    <div class="dashboard-layout">
+        <!-- Left Column (Settings tab on mobile) -->
+        <div class="column left-column">
+            <!-- Detection Settings Controls Panel -->
+            <div class="controls-panel">
+                <h3>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Detection Settings
+                </h3>
+                <div class="control-row">
+                    <div class="slider-container">
+                        <span class="slider-label">Confidence </span>
+                        <input type="range" class="slider-input" id="confidenceSlider" min="0.05" max="1.00" step="0.05" value="0.25" oninput="updateConfidenceLabel(this.value)" onchange="sendConfidence(this.value)">
+                        <span class="slider-value" id="confidenceVal">0.25</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Target Object Class</span>
+                        <select id="targetClassSelect" onchange="sendTargetClass(this.value)" style="background: rgba(15, 15, 25, 0.65); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; cursor: pointer; transition: all 0.15s ease;">
+                            <option value="bird">Bird</option>
+                            <option value="human">Human</option>
+                            <option value="cat">Cat</option>
+                            <option value="dog">Dog</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">AI Model</span>
+                        <select id="modelSelect" onchange="sendModel(this.value)" style="background: rgba(15, 15, 25, 0.65); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; cursor: pointer; transition: all 0.15s ease;">
+                            <option value="yolo26n.pt">YOLO26 Nano (Fast)</option>
+                            <option value="yolo26s.pt">YOLO26 Small (Accurate)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Auto-Record Detections<span class="help-icon" onclick="showHelpModal('auto_record', event)">?</span></span>
+                        <select id="videoCaptureSelect" onchange="sendVideoCapture(this.value)" style="background: rgba(15, 15, 25, 0.65); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; cursor: pointer; transition: all 0.15s ease;">
+                            <option value="disabled">Disabled</option>
+                            <option value="enabled">Enabled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Settings Controls Panel -->
+            <div class="controls-panel">
+                <h3>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    Camera Settings
+                </h3>
+                <div class="control-row">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+                        <span class="slider-label">Resolution</span>
+                        <select id="resolutionSelect" onchange="sendResolution(this.value)" style="background: rgba(15, 15, 25, 0.65); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; cursor: pointer; transition: all 0.15s ease;">
+                            <option value="10">1600x1200 (UXGA)</option>
+                            <option value="9">1280x1024 (SXGA)</option>
+                            <option value="8">1024x768 (XGA)</option>
+                            <option value="7">800x600 (SVGA)</option>
+                            <option value="6">640x480 (VGA)</option>
+                            <option value="4">320x240 (QVGA)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Video quality</span>
+                        <select id="qualitySelect" onchange="sendQuality(this.value)" style="background: rgba(15, 15, 25, 0.65); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; cursor: pointer; transition: all 0.15s ease;">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Toggle Switch for camera image flip -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Flip Camera Image</span>
+                        <label class="switch">
+                            <input type="checkbox" id="flipCheckbox" onchange="handleFlipToggle()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Toggle Switch for Image Improvement -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Image Improvement</span>
+                        <label class="switch">
+                            <input type="checkbox" id="imageImprovementCheckbox" onchange="handleImageImprovementToggle()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movement Settings Controls Panel -->
+            <div class="controls-panel">
+                <h3>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82-.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Movement Settings
+                </h3>
+                <div class="control-row">
+                    <!-- Toggle Switch for Inverted Pan Axis -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+                        <span class="slider-label">Invert Pan Axis<span class="help-icon" onclick="showHelpModal('invert_pan', event)">?</span></span>
+                        <label class="switch">
+                            <input type="checkbox" id="invertPanCheckbox" onchange="handleInvertPanToggle()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Toggle Switch for Inverted Tilt Axis -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Invert Tilt Axis<span class="help-icon" onclick="showHelpModal('invert_tilt', event)">?</span></span>
+                        <label class="switch">
+                            <input type="checkbox" id="invertTiltCheckbox" onchange="handleInvertTiltToggle()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <!-- Toggle Switch for Scanning Mode -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <span class="slider-label">Scanning Mode<span class="help-icon" onclick="showHelpModal('scanning_mode', event)">?</span></span>
+                        <label class="switch">
+                            <input type="checkbox" id="scanningCheckbox" onchange="handleScanningToggle()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boundaries & Calibration Panel (Desktop only) -->
+            <div class="calibration-panel desktop-only-calibration">
+                <div style="font-size: 13.5px; color: #ccc; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                    <div>Pan Angle: <span class="lblPanPos slider-value">90</span>°</div>
+                    <div>Tilt Angle: <span class="lblTiltAng slider-value">90</span>°</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12.5px; margin-bottom: 12px;">
+                    <button class="action-btn" style="width: auto; height: 36px; background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.25); border-radius: 6px; font-weight: bold;" onclick="setHome()">Set Home</button>
+                    <button class="action-btn" style="width: auto; height: 36px; background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.25); border-radius: 6px; font-weight: bold;" onclick="goHome()">Go Home</button>
+                    <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('left')">Set Left Limit</button>
+                    <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('right')">Set Right Limit</button>
+                    <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('top')">Set Top Limit</button>
+                    <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('bottom')">Set Bottom Limit</button>
+                    <button class="action-btn" style="grid-column: span 2; width: auto; height: 36px; background: rgba(255, 75, 75, 0.1); border-color: rgba(255, 75, 75, 0.25); border-radius: 6px; font-weight: bold;" onclick="clearLimits()">Clear All Limits</button>
+                </div>
+                <div style="font-size: 12.5px; color: #bbb; display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>◀ Left: <span class="lblLimitL" style="font-weight:bold; color:#ff7b7b;">None</span></span>
+                        <span>▶ Right: <span class="lblLimitR" style="font-weight:bold; color:#ff7b7b;">None</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>▲ Top: <span class="lblLimitT" style="font-weight:bold; color:#ff7b7b;">10°</span></span>
+                        <span>▼ Bottom: <span class="lblLimitB" style="font-weight:bold; color:#ff7b7b;">170°</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hardware Pinout Connections (Now at bottom of settings tab) -->
+            <div class="wiring-guide">
+                <h3>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                        <rect x="2" y="2" width="20" height="20" rx="4"></rect>
+                        <line x1="6" y1="2" x2="6" y2="22"></line>
+                        <line x1="18" y1="2" x2="18" y2="22"></line>
+                        <line x1="2" y1="6" x2="22" y2="6"></line>
+                        <line x1="2" y1="18" x2="22" y2="18"></line>
+                    </svg>
+                    Hardware Pinout Connections
+                </h3>
+                <ul>
+                    <li>
+                        <span class="pin-label">Pan Servo (180° Angle control):</span>
+                        <span class="pin-num">GPIO 12</span>
+                    </li>
+                    <li>
+                        <span class="pin-label">Tilt Servo (180° Angle control):</span>
+                        <span class="pin-num">GPIO 13</span>
+                    </li>
+                    <li>
+                        <span class="pin-label">Water Pump (Canon) Trigger:</span>
+                        <span class="pin-num">GPIO 4</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Center Column (Targeting tab on mobile) -->
+        <div class="column center-column">
+            <div class="feed-card">
+                <h2>Autonomous Target Feed</h2>
+                <div class="status" id="systemStatus">SYSTEM ACTIVE - READY</div>
+                
+                <div class="stream-container">
+                    <div class="stream-window">
+                        <!-- Recording Indicator Overlay -->
+                        <div id="recIndicator" style="display: none; position: absolute; top: 15px; left: 15px; background: rgba(0, 0, 0, 0.6); color: #ff4b4b; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; align-items: center; gap: 6px; z-index: 10; border: 1px solid rgba(255, 75, 75, 0.3);">
+                            <span class="rec-dot" style="width: 8px; height: 8px; background: #ff4b4b; border-radius: 50%; display: inline-block; animation: pulse 1s infinite alternate;"></span>
+                            REC
+                        </div>
+                        
+                        <img src="/video_feed" id="stream" />
+                        
+                        <!-- Red Target Overlaid (Bit lower than middle) -->
+                        <div class="red-target">
+                            <div class="red-target-dot"></div>
+                        </div>
+
+                        <!-- Desktop controls overlays -->
+                        <!-- D-Pad Joystick Overlay -->
+                        <div class="joystick-overlay desktop-only-overlay">
+                            <button class="arrow-btn" id="btn-up" 
+                                    onmousedown="startNudge('up', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                    ontouchstart="startNudge('up', event)" ontouchend="stopNudge(event)">&#9650;</button>
+                            <div class="horizontal-arrows">
+                                <button class="arrow-btn" id="btn-left" 
+                                        onmousedown="startNudge('left', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                        ontouchstart="startNudge('left', event)" ontouchend="stopNudge(event)">&#9664;</button>
+                                <button class="arrow-btn" id="btn-right" 
+                                        onmousedown="startNudge('right', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                        ontouchstart="startNudge('right', event)" ontouchend="stopNudge(event)">&#9654;</button>
+                            </div>
+                            <button class="arrow-btn" id="btn-down" 
+                                    onmousedown="startNudge('down', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                    ontouchstart="startNudge('down', event)" ontouchend="stopNudge(event)">&#9660;</button>
+                        </div>
+                        
+                        <!-- Actions Overlay -->
+                        <div class="action-overlay desktop-only-overlay">
+                            <!-- Target Fire Button (Water Pump) -->
+                            <button class="action-btn" id="pumpBtn" onclick="firePump()" title="Fire 0.3-Second Water Burst">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="28" height="28">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <line x1="1" y1="12" x2="23" y2="12"></line>
+                                </svg>
+                            </button>
+                            <!-- Zoom Button -->
+                            <button class="action-btn" id="zoomBtn" onclick="handleZoomToggle()" title="Toggle 2x Digital Zoom">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Control Area (Overlays on desktop, block below video feed on mobile) -->
+                    <div class="controls-area">
+                        <div class="controls-grid">
+                            <!-- D-Pad Joystick Overlay -->
+                            <div class="joystick-overlay">
+                                <button class="arrow-btn" id="btn-up-mobile" 
+                                        onmousedown="startNudge('up', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                        ontouchstart="startNudge('up', event)" ontouchend="stopNudge(event)">&#9650;</button>
+                                <div class="horizontal-arrows">
+                                    <button class="arrow-btn" id="btn-left-mobile" 
+                                            onmousedown="startNudge('left', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                            ontouchstart="startNudge('left', event)" ontouchend="stopNudge(event)">&#9664;</button>
+                                    <button class="arrow-btn" id="btn-right-mobile" 
+                                            onmousedown="startNudge('right', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                            ontouchstart="startNudge('right', event)" ontouchend="stopNudge(event)">&#9654;</button>
+                                </div>
+                                <button class="arrow-btn" id="btn-down-mobile" 
+                                        onmousedown="startNudge('down', event)" onmouseup="stopNudge(event)" onmouseleave="stopNudge(event)" 
+                                        ontouchstart="startNudge('down', event)" ontouchend="stopNudge(event)">&#9660;</button>
+                            </div>
+                            
+                            <!-- Actions Overlay (Enlarged Pump) -->
+                            <div class="action-overlay">
+                                <!-- Target Fire Button (Water Pump) - x2 size -->
+                                <button class="action-btn" id="pumpBtn-mobile" onclick="firePump()" title="Fire 0.3-Second Water Burst">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <circle cx="12" cy="12" r="5"></circle>
+                                        <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <line x1="1" y1="12" x2="23" y2="12"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Boundaries & Calibration Panel (Now directly below video card on all screens) -->
+                        <div class="calibration-panel">
+                            <div style="font-size: 13.5px; color: #ccc; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                                <div>Pan Angle: <span class="lblPanPos slider-value">90</span>°</div>
+                                <div>Tilt Angle: <span class="lblTiltAng slider-value">90</span>°</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12.5px; margin-bottom: 12px;">
+                                <button class="action-btn" style="width: auto; height: 36px; background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.25); border-radius: 6px; font-weight: bold;" onclick="setHome()">Set Home</button>
+                                <button class="action-btn" style="width: auto; height: 36px; background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.25); border-radius: 6px; font-weight: bold;" onclick="goHome()">Go Home</button>
+                                <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('left')">Set Left Limit</button>
+                                <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('right')">Set Right Limit</button>
+                                <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('top')">Set Top Limit</button>
+                                <button class="action-btn" style="width: auto; height: 36px; border-radius: 6px;" onclick="setLimit('bottom')">Set Bottom Limit</button>
+                                <button class="action-btn" style="grid-column: span 2; width: auto; height: 36px; background: rgba(255, 75, 75, 0.1); border-color: rgba(255, 75, 75, 0.25); border-radius: 6px; font-weight: bold;" onclick="clearLimits()">Clear All Limits</button>
+                            </div>
+                            <div style="font-size: 12.5px; color: #bbb; display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>◀ Left: <span class="lblLimitL" style="font-weight:bold; color:#ff7b7b;">None</span></span>
+                                    <span>▶ Right: <span class="lblLimitR" style="font-weight:bold; color:#ff7b7b;">None</span></span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>▲ Top: <span class="lblLimitT" style="font-weight:bold; color:#ff7b7b;">10°</span></span>
+                                    <span>▼ Bottom: <span class="lblLimitB" style="font-weight:bold; color:#ff7b7b;">170°</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column (Recordings tab on mobile) -->
+        <div class="column right-column">
+            <!-- Saved Recordings Controls Panel -->
+            <div class="controls-panel" style="display: flex; flex-direction: column;">
+                <h3>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 5px;">
+                        <path d="M23 7l-7 5 7 5V7z"></path>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                    Saved Recordings
+                </h3>
+                <div id="videoListContainer">
+                    <div style="font-size: 13.5px; color: #aaa; text-align: center; padding: 20px 0; grid-column: 1 / -1;">No recordings found.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Bottom Navigation Tab Bar -->
+    <nav class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('camera')">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            <span>Targeting</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('settings')">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Settings</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('videos')">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 7l-7 5 7 5V7z"></path>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+            <span>Recordings</span>
+        </button>
+    </nav>
+
+    <script>
+        let isDraggingSlider = false;
+
+        function switchTab(tabName) {
+            document.body.className = 'tab-' + tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const buttons = document.querySelectorAll('.tab-btn');
+            if (tabName === 'camera') buttons[0].classList.add('active');
+            if (tabName === 'settings') buttons[1].classList.add('active');
+            if (tabName === 'videos') buttons[2].classList.add('active');
+        }
+
+        // Global helper to update text of elements by class
+        function setText(className, text) {
+            document.querySelectorAll('.' + className).forEach(el => {
+                el.textContent = text;
+            });
+        }
+
+        function fetchStatus() {
+            fetch('/api/status')
+                .then(res => res.json())
+                .then(data => {
+                    updateFlipUI(data.flip === 1);
+                    if (data.zoom_2x !== undefined) {
+                        updateZoomUI(data.zoom_2x);
+                    }
+                    if (data.invert_pan !== undefined) {
+                        document.getElementById('invertPanCheckbox').checked = data.invert_pan;
+                    }
+                    if (data.invert_tilt !== undefined) {
+                        document.getElementById('invertTiltCheckbox').checked = data.invert_tilt;
+                    }
+                    if (data.scanning_mode !== undefined) {
+                        document.getElementById('scanningCheckbox').checked = data.scanning_mode;
+                    }
+                    if (data.image_improvement !== undefined) {
+                        document.getElementById('imageImprovementCheckbox').checked = data.image_improvement;
+                    }
+                    if (data.confidence !== undefined && !isDraggingSlider) {
+                        const slider = document.getElementById('confidenceSlider');
+                        const valLabel = document.getElementById('confidenceVal');
+                        slider.value = data.confidence;
+                        valLabel.textContent = parseFloat(data.confidence).toFixed(2);
+                    }
+                    if (data.quality !== undefined) {
+                        document.getElementById('qualitySelect').value = data.quality;
+                    }
+                    if (data.resolution !== undefined) {
+                        document.getElementById('resolutionSelect').value = data.resolution;
+                    }
+                    if (data.pan_position !== undefined) {
+                        setText('lblPanPos', data.pan_position);
+                        setText('lblTiltAng', Math.round(data.tilt_angle));
+                        updateLimitsLabels({
+                            left: data.pan_limit_left,
+                            right: data.pan_limit_right,
+                            top: data.tilt_limit_top,
+                            bottom: data.tilt_limit_bottom
+                        });
+                    }
+                    const statusEl = document.getElementById('systemStatus');
+                    if (statusEl) {
+                        const btn = document.getElementById('pumpBtn');
+                        const mBtn = document.getElementById('pumpBtn-mobile');
+                        if (data.camera_connected === false) {
+                            statusEl.textContent = "SYSTEM ACTIVE - DISCONNECTED";
+                            statusEl.style.color = "#ff4b4b";
+                            if (btn) btn.classList.remove('active');
+                            if (mBtn) mBtn.classList.remove('active');
+                        } else if (data.firing) {
+                            statusEl.textContent = "TARGET LOCKED - FIRING!";
+                            statusEl.style.color = "#ff4b4b";
+                            if (btn) btn.classList.add('active');
+                            if (mBtn) mBtn.classList.add('active');
+                        } else {
+                            statusEl.textContent = "SYSTEM ACTIVE - READY";
+                            statusEl.style.color = "#00ff88";
+                            if (!pumpTimeout) {
+                                if (btn) btn.classList.remove('active');
+                                if (mBtn) mBtn.classList.remove('active');
+                            }
+                        }
+                    }
+                    if (data.target_class !== undefined) {
+                        document.getElementById('targetClassSelect').value = data.target_class;
+                    }
+                    if (data.model_file !== undefined) {
+                        document.getElementById('modelSelect').value = data.model_file;
+                    }
+                    if (data.video_capture !== undefined) {
+                        document.getElementById('videoCaptureSelect').value = data.video_capture ? 'enabled' : 'disabled';
+                    }
+                    const recEl = document.getElementById('recIndicator');
+                    if (recEl && data.is_recording !== undefined) {
+                        recEl.style.display = data.is_recording ? 'flex' : 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    const statusEl = document.getElementById('systemStatus');
+                    if (statusEl) {
+                        statusEl.textContent = "SYSTEM ACTIVE - DISCONNECTED";
+                        statusEl.style.color = "#ff4b4b";
+                    }
+                });
+        }
+
+        function updateLimitsLabels(limits) {
+            setText('lblLimitL', limits.left !== null ? Math.round(limits.left) + "°" : "None");
+            setText('lblLimitR', limits.right !== null ? Math.round(limits.right) + "°" : "None");
+            setText('lblLimitT', limits.top !== null ? Math.round(limits.top) + "°" : "None");
+            setText('lblLimitB', limits.bottom !== null ? Math.round(limits.bottom) + "°" : "None");
+        }
+
+        function nudge(direction) {
+            fetch('/api/manual_nudge', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ dir: direction })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'blocked') {
+                    alert(data.message);
+                } else if (data.status === 'success') {
+                    setText('lblPanPos', data.pan_position);
+                    setText('lblTiltAng', Math.round(data.tilt_angle));
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function goHome() {
+            fetch('/api/go_home', { method: 'POST' })
+                .catch(err => console.error(err));
+        }
+
+        function setLimit(limitType) {
+            fetch('/api/set_limit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ type: limitType })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateLimitsLabels(data.limits);
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function clearLimits() {
+            fetch('/api/clear_limits', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateLimitsLabels({ left: null, right: null, top: 10.0, bottom: 170.0 });
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function setHome() {
+            fetch('/api/set_home', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    setText('lblPanPos', data.pan_position);
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        let nudgeInterval = null;
+
+        function startNudge(direction, event) {
+            if (event && event.cancelable) event.preventDefault();
+            if (nudgeInterval) clearInterval(nudgeInterval);
+            nudge(direction);
+            nudgeInterval = setInterval(() => {
+                nudge(direction);
+            }, 150);
+        }
+
+        function stopNudge(event) {
+            if (event && event.cancelable) event.preventDefault();
+            if (nudgeInterval) {
+                clearInterval(nudgeInterval);
+                nudgeInterval = null;
+            }
+        }
+
+        function updateFlipUI(isFlipped) {
+            const checkbox = document.getElementById('flipCheckbox');
+            if (checkbox) {
+                checkbox.checked = isFlipped;
+            }
+        }
+
+        function updateZoomUI(isZoomed) {
+            const zBtn = document.getElementById('zoomBtn');
+            if (zBtn) {
+                if (isZoomed) {
+                    zBtn.classList.add('active');
+                } else {
+                    zBtn.classList.remove('active');
+                }
+            }
+        }
+
+        function handleFlipToggle() {
+            fetch('/api/toggle_flip', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    updateFlipUI(data.flip === 1);
+                })
+                .catch(err => console.error(err));
+        }
+
+        function handleZoomToggle() {
+            fetch('/api/toggle_zoom', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    updateZoomUI(data.zoom_2x);
+                })
+                .catch(err => console.error(err));
+        }
+
+        function handleInvertPanToggle() {
+            fetch('/api/toggle_invert_pan', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('invertPanCheckbox').checked = data.invert_pan;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function handleInvertTiltToggle() {
+            fetch('/api/toggle_invert_tilt', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('invertTiltCheckbox').checked = data.invert_tilt;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function handleScanningToggle() {
+            fetch('/api/toggle_scanning', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('scanningCheckbox').checked = data.scanning_mode;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function handleImageImprovementToggle() {
+            fetch('/api/toggle_image_improvement', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('imageImprovementCheckbox').checked = data.image_improvement;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function updateConfidenceLabel(val) {
+            isDraggingSlider = true;
+            document.getElementById('confidenceVal').textContent = parseFloat(val).toFixed(2);
+        }
+
+        function sendConfidence(val) {
+            isDraggingSlider = false;
+            fetch('/api/set_confidence', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ confidence: parseFloat(val) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const slider = document.getElementById('confidenceSlider');
+                    const valLabel = document.getElementById('confidenceVal');
+                    slider.value = data.confidence;
+                    valLabel.textContent = parseFloat(data.confidence).toFixed(2);
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function sendTargetClass(val) {
+            fetch('/api/set_target_class', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ target: val })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('targetClassSelect').value = data.target_class;
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function sendModel(val) {
+            fetch('/api/set_model', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ model: val })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('modelSelect').value = data.model;
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function sendVideoCapture(val) {
+            const isEnabled = (val === 'enabled');
+            fetch('/api/set_video_capture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ enable: isEnabled })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('videoCaptureSelect').value = data.video_capture ? 'enabled' : 'disabled';
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function sendResolution(val) {
+            fetch('/api/set_resolution', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ resolution: parseInt(val) })
+            })
+            .catch(err => console.error(err));
+        }
+
+        function sendQuality(val) {
+            fetch('/api/set_quality', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quality: val })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('qualitySelect').value = data.quality;
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        let pumpTimeout = null;
+        function firePump() {
+            if (pumpTimeout) return;
+            const btn = document.getElementById('pumpBtn');
+            if (btn) btn.classList.add('active');
+            const mBtn = document.getElementById('pumpBtn-mobile');
+            if (mBtn) mBtn.classList.add('active');
+            fetch('/api/fire_pump', { method: 'POST' })
+                .catch(err => console.error(err));
+            pumpTimeout = setTimeout(() => {
+                if (btn) btn.classList.remove('active');
+                if (mBtn) mBtn.classList.remove('active');
+                pumpTimeout = null;
+            }, 300);
+        }
+
+        function loadVideoList() {
+            fetch('/api/videos')
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('videoListContainer');
+                    if (!container) return;
+                    container.innerHTML = '';
+                    if (!data.videos || data.videos.length === 0) {
+                        container.innerHTML = '<div style="font-size: 13.5px; color: #aaa; text-align: center; padding: 20px 0; grid-column: 1 / -1;">No recordings found.</div>';
+                        return;
+                    }
+                    data.videos.forEach(vid => {
+                        const card = document.createElement('div');
+                        card.style = 'transition: background 0.15s ease; min-width: 0; position: relative;';
+                        
+                        // ==========================================
+                        // 1. DESKTOP CARD LAYOUT (vid-card-desktop)
+                        // ==========================================
+                        const desktopCard = document.createElement('div');
+                        desktopCard.className = 'vid-card-desktop';
+                        desktopCard.style = 'background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box;';
+                        desktopCard.onmouseenter = () => desktopCard.style.background = 'rgba(255, 255, 255, 0.06)';
+                        desktopCard.onmouseleave = () => desktopCard.style.background = 'rgba(255, 255, 255, 0.03)';
+                        
+                        const dHeader = document.createElement('div');
+                        dHeader.style = 'display: flex; flex-direction: column; gap: 1px; min-width: 0;';
+                        
+                        const dTimeEl = document.createElement('span');
+                        dTimeEl.style = 'font-size: 12px; font-weight: bold; color: rgba(255,255,255,0.95); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+                        dTimeEl.textContent = vid.timestamp;
+                        
+                        const dSizeEl = document.createElement('span');
+                        dSizeEl.style = 'font-size: 10px; color: #aaa;';
+                        dSizeEl.textContent = `${vid.size_mb} MB`;
+                        
+                        dHeader.appendChild(dTimeEl);
+                        dHeader.appendChild(dSizeEl);
+                        desktopCard.appendChild(dHeader);
+                        
+                        const dContent = document.createElement('div');
+                        dContent.style = 'display: flex; align-items: center; gap: 6px;';
+                        
+                        const dThumbImg = document.createElement('img');
+                        const thumbFilename = vid.filename.replace('.mp4', '.jpg');
+                        dThumbImg.src = `/videos/${thumbFilename}`;
+                        dThumbImg.style = 'width: 96px; height: 72px; object-fit: cover; border-radius: 4px; border: 1.5px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease; flex-shrink: 0;';
+                        dThumbImg.onerror = () => dThumbImg.style.display = 'none';
+                        dThumbImg.onmouseenter = () => {
+                            dThumbImg.style.transform = 'scale(1.03)';
+                            dThumbImg.style.borderColor = 'rgba(0, 210, 255, 0.5)';
+                        };
+                        dThumbImg.onmouseleave = () => {
+                            dThumbImg.style.transform = 'scale(1)';
+                            dThumbImg.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                        };
+                        dThumbImg.onclick = () => openVideoModal(vid.filename, vid.timestamp);
+                        dContent.appendChild(dThumbImg);
+                        
+                        const dActions = document.createElement('div');
+                        dActions.style = 'display: flex; flex-direction: column; gap: 4px; flex-grow: 1; justify-content: center;';
+                        
+                        const dDlBtn = document.createElement('button');
+                        dDlBtn.style = 'background: rgba(0, 255, 136, 0.12); border: 1.2px solid rgba(0, 255, 136, 0.25); color: #00ff88; padding: 2px 0; height: 34px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box;';
+                        dDlBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
+                        dDlBtn.title = "Download recording";
+                        dDlBtn.onclick = () => {
+                            const link = document.createElement('a');
+                            link.href = `/videos/${vid.filename}`;
+                            link.download = vid.filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        };
+                        
+                        const dDelBtn = document.createElement('button');
+                        dDelBtn.style = 'background: rgba(255, 75, 75, 0.12); border: 1.2px solid rgba(255, 75, 75, 0.25); color: #ff4b4b; padding: 2px 0; height: 34px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.15s ease; text-align: center; width: 100%; box-sizing: border-box;';
+                        dDelBtn.textContent = 'Delete';
+                        dDelBtn.onclick = () => {
+                            if (confirm('Delete this recording?')) {
+                                fetch(`/api/delete_video/${vid.filename}`, { method: 'POST' })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.status === 'success') {
+                                            loadVideoList();
+                                        }
+                                    });
+                            }
+                        };
+                        
+                        dActions.appendChild(dDlBtn);
+                        dActions.appendChild(dDelBtn);
+                        dContent.appendChild(dActions);
+                        desktopCard.appendChild(dContent);
+                        card.appendChild(desktopCard);
+
+                        // ==========================================
+                        // 2. MOBILE CARD LAYOUT (vid-card-mobile)
+                        // ==========================================
+                        const mobileCard = document.createElement('div');
+                        mobileCard.className = 'vid-card-mobile';
+                        mobileCard.style = 'background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; box-sizing: border-box; min-width: 0;';
+                        mobileCard.onmouseenter = () => mobileCard.style.background = 'rgba(255, 255, 255, 0.06)';
+                        mobileCard.onmouseleave = () => mobileCard.style.background = 'rgba(255, 255, 255, 0.03)';
+                        
+                        // Left side container (Text + 3 buttons below it)
+                        const mLeftCol = document.createElement('div');
+                        mLeftCol.style = 'display: flex; flex-direction: column; gap: 8px; min-width: 0; flex-grow: 1;';
+                        
+                        const mTextWrapper = document.createElement('div');
+                        mTextWrapper.style = 'display: flex; flex-direction: column; gap: 3px; min-width: 0;';
+                        
+                        const mTimeEl = document.createElement('span');
+                        mTimeEl.style = 'font-size: 13px; font-weight: bold; color: rgba(255,255,255,0.95); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+                        mTimeEl.textContent = vid.timestamp;
+                        
+                        const mSizeEl = document.createElement('span');
+                        mSizeEl.style = 'font-size: 10.5px; color: #aaa;';
+                        mSizeEl.textContent = `${vid.size_mb} MB`;
+                        
+                        mTextWrapper.appendChild(mTimeEl);
+                        mTextWrapper.appendChild(mSizeEl);
+                        mLeftCol.appendChild(mTextWrapper);
+                        
+                        // 2 buttons side-by-side below the text
+                        const mButtonsRow = document.createElement('div');
+                        mButtonsRow.style = 'display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%;';
+                        
+                        const mDlBtn = document.createElement('button');
+                        mDlBtn.style = 'background: rgba(0, 255, 136, 0.12); border: 1.2px solid rgba(0, 255, 136, 0.25); color: #00ff88; height: 60px; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box;';
+                        mDlBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
+                        mDlBtn.title = "Download recording";
+                        mDlBtn.onclick = () => {
+                            const link = document.createElement('a');
+                            link.href = `/videos/${vid.filename}`;
+                            link.download = vid.filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        };
+                        
+                        const mDelBtn = document.createElement('button');
+                        mDelBtn.style = 'background: rgba(255, 75, 75, 0.12); border: 1.2px solid rgba(255, 75, 75, 0.25); color: #ff4b4b; height: 60px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.15s ease; text-align: center; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center;';
+                        mDelBtn.textContent = 'Delete';
+                        mDelBtn.onclick = () => {
+                            if (confirm('Delete this recording?')) {
+                                fetch(`/api/delete_video/${vid.filename}`, { method: 'POST' })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.status === 'success') {
+                                            loadVideoList();
+                                        }
+                                    });
+                            }
+                        };
+                        
+                        mButtonsRow.appendChild(mDlBtn);
+                        mButtonsRow.appendChild(mDelBtn);
+                        mLeftCol.appendChild(mButtonsRow);
+                        mobileCard.appendChild(mLeftCol);
+                        
+                        // Right side: 144x108 px thumbnail
+                        const mThumbImg = document.createElement('img');
+                        mThumbImg.src = `/videos/${thumbFilename}`;
+                        mThumbImg.style = 'width: 144px; height: 108px; object-fit: cover; border-radius: 6px; border: 1.5px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease; flex-shrink: 0;';
+                        mThumbImg.onerror = () => mThumbImg.style.display = 'none';
+                        mThumbImg.onmouseenter = () => {
+                            mThumbImg.style.transform = 'scale(1.03)';
+                            mThumbImg.style.borderColor = 'rgba(0, 210, 255, 0.5)';
+                        };
+                        mThumbImg.onmouseleave = () => {
+                            mThumbImg.style.transform = 'scale(1)';
+                            mThumbImg.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                        };
+                        mThumbImg.onclick = () => openVideoModal(vid.filename, vid.timestamp);
+                        mobileCard.appendChild(mThumbImg);
+                        
+                        card.appendChild(mobileCard);
+                        
+                        container.appendChild(card);
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        function openVideoModal(filename, timestamp) {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('modalVideoPlayer');
+            const title = document.getElementById('videoModalTitle');
+            if (modal && player && title) {
+                title.textContent = `Recording - ${timestamp}`;
+                player.src = `/videos/${filename}`;
+                modal.style.display = 'flex';
+                player.play().catch(e => {});
+            }
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('modalVideoPlayer');
+            if (modal && player) {
+                player.pause();
+                player.src = '';
+                modal.style.display = 'none';
+            }
+        }
+
+        function showHelpModal(settingKey, event) {
+            if (event) {
+                event.stopPropagation(); // prevent immediate click event on window
+            }
+            const titleEl = document.getElementById('infoModalTitle');
+            const textEl = document.getElementById('infoModalText');
+            
+            const explanations = {
+                'invert_pan': {
+                    title: 'Invert Pan Axis',
+                    text: 'Reverses the horizontal movement direction. When enabled, manual nudge left/right buttons are swapped, and the automatic tracking algorithm will adjust its pan correction in the opposite direction.'
+                },
+                'invert_tilt': {
+                    title: 'Invert Tilt Axis',
+                    text: 'Reverses the vertical movement direction. When enabled, manual nudge up/down buttons are swapped, and the automatic tracking algorithm will adjust its tilt correction in the opposite direction.'
+                },
+                'scanning_mode': {
+                    title: 'Scanning Mode',
+                    text: 'Enables automatic searching sweeps when the turret has been idle without detecting a target for 3 minutes. The turret will sweep left and right to locate targets.'
+                },
+                'auto_record': {
+                    title: 'Auto-Record Detections',
+                    text: 'Automatically records and saves a high-quality video clip to the storage folder whenever the turret locks onto and fires at a target.'
+                }
+            };
+            
+            const data = explanations[settingKey];
+            if (data && event) {
+                titleEl.textContent = data.title;
+                textEl.textContent = data.text;
+                const modal = document.getElementById('infoModal');
+                modal.style.display = 'block';
+                
+                // Position popover next to the pressed ? button
+                const rect = event.currentTarget.getBoundingClientRect();
+                let popoverLeft = rect.left + window.scrollX - 120; // center aligned to ?
+                let popoverTop = rect.bottom + window.scrollY + 8; // 8px below ?
+                
+                // Keep popover inside screen boundaries
+                const popoverWidth = 280;
+                if (popoverLeft < 10) {
+                    popoverLeft = 10;
+                }
+                const maxLeft = window.innerWidth - popoverWidth - 10;
+                if (popoverLeft > maxLeft) {
+                    popoverLeft = maxLeft;
+                }
+                
+                modal.style.left = popoverLeft + 'px';
+                modal.style.top = popoverTop + 'px';
+            }
+        }
+        
+        function closeInfoModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+        
+        // Close modal if user clicks outside content
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('infoModal');
+            if (modal && modal.style.display === 'block') {
+                if (!event.target.classList.contains('help-icon') && !modal.contains(event.target)) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+
+        // Initial sync
+        fetchStatus();
+        loadVideoList();
+        setInterval(fetchStatus, 2000);
+        setInterval(loadVideoList, 5000);
+    </script>
+ 
+    <!-- Video Player Modal -->
+    <div id="videoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+        <div style="background: #151525; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; width: 90%; max-width: 640px; box-shadow: 0 24px 64px rgba(0,0,0,0.8); position: relative; display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="videoModalTitle" style="margin: 0; font-size: 16px; color: #ff4b4b;">Recording Playback</h3>
+                <button onclick="closeVideoModal()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+            <video id="modalVideoPlayer" controls style="width: 100%; border-radius: 8px; background: #000; outline: none;"></video>
+        </div>
+    </div>
+
+    <!-- Info Explanation Modal -->
+    <div id="infoModal" class="info-modal">
+        <div class="info-modal-content">
+            <span class="info-modal-close" onclick="closeInfoModal()">&times;</span>
+            <h4 id="infoModalTitle">Setting Explanation</h4>
+            <p id="infoModalText">Explanation text goes here.</p>
+        </div>
+    </div>
+</body>
+</html>
