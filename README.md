@@ -131,4 +131,4 @@ The Flask server hosts several REST endpoints:
 * `POST /api/toggle_invert_pan` / `POST /api/toggle_invert_tilt`: Persistent axes inversion settings.
 * `GET /api/status`: Returns current turret coordinates, connection health, and active settings values.
 
-<img src="Images/hunt.gif" width="380" alt="Demo" /><img src="Images/turret.jpg" width="380" alt="turret" />
+<img src="Images/hunt.gif" width="380" alt="Demo" /><img src="Images/Turret.jpg" width="480" alt="turret" />
