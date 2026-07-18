@@ -37,7 +37,7 @@ WaTurrent automatically detects, tracks, and sprays selected targets (supporting
 
 added full schematics for the project
 
-<img src="Scematics.png" width="380" alt="Electric Schematics" />
+<img src="Images/Scematics.png" width="380" alt="Electric Schematics" />
 
 ---
 
@@ -130,3 +130,5 @@ The Flask server hosts several REST endpoints:
 * `POST /api/toggle_zoom`: Switches between standard and 2x digital zoom.
 * `POST /api/toggle_invert_pan` / `POST /api/toggle_invert_tilt`: Persistent axes inversion settings.
 * `GET /api/status`: Returns current turret coordinates, connection health, and active settings values.
+
+<img src="Images/hunt.gif" width="380" alt="Demo" /><img src="Images/turret.jpg" width="380" alt="turret" />
