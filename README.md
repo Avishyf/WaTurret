@@ -33,12 +33,17 @@ WaTurrent automatically detects, tracks, and sprays selected targets (supporting
 
 ---
 
-## 🔌 Wiring & MOSFET Diagram
+## 🔌 Wiring
 
 
 added full schematics for the project
 
+<img src="Scematics.png" width="380" alt="Electric Schematics" />
+
 ---
+
+## 3D printing ##
+the model can be [found here](https://www.thingiverse.com/thing:7384906)
 
 ## 📦 Installation & Setup
 
