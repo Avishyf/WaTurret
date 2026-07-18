@@ -64,7 +64,48 @@ added full schematics for the project
    ```
 
 ### 3. Docker Container Setup
-If you prefer running the turret in a containerized environment:
+
+If you prefer running the turret in a containerized environment, you can either pull the prebuilt image directly from Docker Hub or build it locally from the source.
+
+#### Option A: Deploy using Docker Hub (No local build needed)
+Simply pull and run the prebuilt image from Docker Hub (`avishyf/waturrent:latest`):
+
+* **Using Docker CLI**:
+  ```bash
+  docker run -d \
+    --name waturrent \
+    --network host \
+    --restart unless-stopped \
+    avishyf/waturrent:latest
+  ```
+  *(Note: If you are on Windows/macOS where `--network host` is not supported, pass the camera IP explicitly via environment variables):*
+  ```bash
+  docker run -d \
+    --name waturrent \
+    -p 5001:5001 \
+    -e ESP_IP=192.168.1.150 \
+    --restart unless-stopped \
+    avishyf/waturrent:latest
+  ```
+
+* **Using Docker Compose**:
+  Use the following stack configuration:
+  ```yaml
+  version: '3.8'
+  services:
+    waturrent:
+      image: avishyf/waturrent:latest
+      container_name: waturrent
+      network_mode: host # Comment out and use ports/ESP_IP on Windows/macOS
+      restart: unless-stopped
+  ```
+  And launch it:
+  ```bash
+  docker compose up -d
+  ```
+
+#### Option B: Build and run locally (For code modifications)
+If you made changes to the python files or webpage styles:
 1. Rebuild the container locally from the root folder:
    ```bash
    docker compose build --no-cache
@@ -74,7 +115,6 @@ If you prefer running the turret in a containerized environment:
    docker compose up -d
    ```
 3. Access the dashboard web portal in your browser at `http://localhost:5001`.
-# Do note that if tou run docker desktop on Windows it wouldn't auto detect the turrent since its not realy configured as 'Host', it is recomandded to run container on Linux distro
 
 ---
 
