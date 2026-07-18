@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  esp-turret:
+    build: .
+    image: waturrent:latest
+    container_name: waturrent
+    
+    # 1. OPTION A: Host network mode (Recommended for Linux hosts).
+    # This is required for mDNS auto-discovery (searching for esp32cam.local) to work.
+    network_mode: host
+    
+    # 2. OPTION B: Port mapping + Manual IP (Recommended for Windows/macOS hosts).
+    # Since host networking has limitations on Windows/macOS, use port mapping and 
+    # specify your ESP32-CAM's IP address directly.
+    # To use Option B, comment out "network_mode: host" above, and uncomment the lines below:
+    # ports:
+    #   - "5001:5001"
+    # environment:
+    #   - ESP_IP=192.168.1.150 # <-- Put your ESP32-CAM's IP address here
+    
+    restart: unless-stopped
