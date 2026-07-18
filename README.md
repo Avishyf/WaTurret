@@ -14,8 +14,7 @@ WaTurrent automatically detects, tracks, and sprays selected targets (supporting
 * 📱 **Premium Web Dashboard**: Dark-mode glassmorphic interface with:
   * Live camera stream and interactive overlays (Digital Zoom, Manual Fire Burst).
   * Independent **Movement Settings** panel (Invert Pan, Invert Tilt, Auto-Scanning Sweeps).
-  * Interactive **Question Mark Tooltips** next to settings for instant explanations.
-* 📦 **Docker & Portainer Ready**: Fully containerized setup support using Docker Compose.
+* 📦 **Docker Ready**: Fully containerized setup support using Docker Compose.
 
 ---
 
