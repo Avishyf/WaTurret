@@ -1,4 +1,4 @@
-# 🎯 WaTurrent — AI-Powered Water Sentry Turret
+# 🎯 WaTurret — AI-Powered Water Sentry Turret
 
 An intelligent sentry turret system built on an **ESP32-CAM** and a **Python YOLO AI backend**.
 WaTurrent automatically detects, tracks, and sprays selected targets (supporting Humans, Birds, Cats, and Dogs) while providing web dashboard for manual override and remote configuration.
