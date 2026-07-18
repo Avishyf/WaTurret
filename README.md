@@ -72,7 +72,7 @@ the model can be [found here](https://www.thingiverse.com/thing:7384906)
 If you prefer running the turret in a containerized environment, you can either pull the prebuilt image directly from Docker Hub or build it locally from the source.
 
 #### Option A: Deploy using Docker Hub (No local build needed)
-Simply pull and run the prebuilt image from Docker Hub (`avishyf/waturrent:latest`):
+Simply pull and run the prebuilt image from Docker Hub (`avishyf/waturret:latest`):
 
 * **Using Docker CLI**:
   ```bash
